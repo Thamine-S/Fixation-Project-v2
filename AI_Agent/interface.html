@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat WMS</title>
+  <style>
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    overflow-x: hidden;
+}
+
+.chatbot-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #4c5eaf;
+    color: white;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+.chat-container {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 650px;
+    height: 800px;
+    display: none;
+    flex-direction: column;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    z-index: 999;
+}
+
+.chat-box {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.chat-header {
+    background-color: #4c5eaf;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    align-items: center;
+}
+
+.chat-messages {
+    flex-grow: 1;
+    padding: 10px;
+    overflow-y: auto;
+    max-height: 700px;
+    border-bottom: 1px solid #ccc;
+      display: flex; 
+  flex-direction: column;
+}
+
+.chat-input {
+    display: flex;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.chat-input input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-right: 10px;
+    font-size: 14px;
+}
+
+.chat-input button {
+    padding: 10px 15px;
+    background-color: #4c5eaf;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.chat-input button:hover {
+    background-color: #4c5eaf;
+}
+
+#closeBtn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.user-message {
+    background-color: #f1f1f1; 
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    max-width: 80%;
+      text-align: right;
+      width: fit-content;
+  align-self: flex-end !important;
+}
+
+
+.talia-message {
+   padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    max-width: 80%;
+    width: fit-content;
+  background-color: #d8e0ff;
+  text-align: justify;
+  align-self: flex-start;}
+
+
+  .message-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-bottom: 10px;
+}
+
+.talia-wrapper {
+  align-items: flex-start;
+}
+
+.message-sender {
+  font-size: 12px;
+  color: #02007c;
+  margin-top: 0px;
+  padding: 0 8px;
+}
+
+
+.typing-indicator {
+  display: inline-block;
+  font-style: italic;
+  font-size: 14px;
+  color: #02006d;
+  margin: 5px;
+  padding: 10px;
+  background-color: #ccd3e7;
+  border-radius: 8px;
+  max-width: 200px;
+  animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+  0% { opacity: 0.3; }
+  50% { opacity: 1; }
+  100% { opacity: 0.3; }
+}
+  </style>
+</head>
+<body>
+  <div class="chatbot-btn" id="chatbotBtn"><span>💬</span></div>
+
+  <div class="chat-container" id="chatContainer">
+    <div class="chat-box">
+      <div class="chat-header">
+        <h2>Suporte</h2>
+        <button id="closeBtn">X</button>
+      </div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="message-wrapper talia-wrapper">
+          <div class="message-class talia-message">
+            Olá! Me chamo <span style="color: #5a06c9;">Talia</span> e sou sua Assistente de Suporte Nível 1. Como posso te ajudar hoje? <br>
+            Você pode descrever o seu problema ou, se preferir, me enviar um print da sua tela, o que for mais fácil para você. Estou à disposição!
+          </div>
+          <div class="message-sender">Talia</div>
+        </div>
+      </div>
+      <div class="chat-input">
+        <input type="text" id="userInput" placeholder="Digite sua mensagem..." />
+        <button id="sendBtn">Enviar</button>
+      </div>
+      <input type="file" id="imageInput" accept="image/*" />
+    </div>
+  </div>
+
+  <script type="module">
+
+const chamaAPI = `{
+    "getLocation": {
+      "api_a_ser_chamada": "getLocation",
+        "descricao": "Consulta a quantidade de lugares de armazenagem disponíveis.",
+    },
+    "getData": {
+      "api_a_ser_chamada": "getData",
+        "descricao": "Retorna a quantidade total de produtos nessa localização junto da lista completa de produtos presente nessa localização",
+        "parametros": ["respectivo número da Localização"]
+    }
+}`
+
+
+let resposta
+
+
+
+    import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+
+    const API_KEY = ""; 
+
+    const genAI = new GoogleGenerativeAI(API_KEY);
+    // let manualText = "";
+    let historicoMensagens = [];
+
+// let manualCarregado = false;
+
+
+//     async function carregarManualMD() {
+//       const mdUrls = ["data/Manual_WMS_Seguranca.md", "data/Mapa.md", "data/Manual_WMS_Contrato.md"];
+//       let textoCompleto = "";
+
+//       for (const mdUrl of mdUrls) {
+//         const response = await fetch(mdUrl);
+//         let markdownText = await response.text();
+
+//         manualText += "\n ----- \n" + markdownText ;
+//       }
+
+
+
+//   manualCarregado = true;
+
+// }
+
+
+
+ async function AgenteChamaAPI(mensagemUsuario, imagemBase64 = null) {
+      showTypingIndicator();
+
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+
+const partes = [];
+
+if (mensagemUsuario) partes.push({ text: mensagemUsuario });
+if (imagemBase64) {
+  partes.push({
+    inlineData: {
+      mimeType: "image/png",
+      data: imagemBase64
+    }
+  });
+}
+
+partes.push({ text: `
+Com base na ${mensagemUsuario}, retorne qual das APIs deve ser chamada como nesse exemplos formato JSON:
+${chamaAPI}
+
+Sua resposta deve ser em formato JSON, nada além disso:
+
+
+{
+"api_a_ser_chamada": "nome_da_API"
+}
+
+ou
+ 
+{
+"api_a_ser_chamada": "nome_da_API",
+"localizacao": "número"
+}
+
+` });
+
+
+
+const result = await model.generateContent({
+  contents: [{ role: "user", parts:partes }],
+  generationConfig: {
+    temperature: 0.6,
+  },
+});
+
+ const response = await result.response;
+      const texto = await response.text();
+      hideTypingIndicator(); 
+        resposta = texto
+      addMessage("Talia: " + texto);
+
+
+await AcionaAPI(resposta, mensagemUsuario);
+    }
+
+// Função que chama a API
+
+async function AcionaAPI(respostaBruta, userInput) {
+  try {
+    // Tenta extrair o JSON da resposta com uma regex básica
+    const match = respostaBruta.match(/\{[\s\S]*?\}/);
+    
+    if (!match) {
+      throw new Error("Nenhum JSON encontrado na resposta.");
+    }
+
+    const dadosResposta = JSON.parse(match[0]);
+
+    let dadosAPI;
+
+    if (dadosResposta.api_a_ser_chamada === "getLocation") {
+      dadosAPI = await getLocation();
+    } else if (dadosResposta.api_a_ser_chamada === "getData" && dadosResposta.localizacao) {
+      dadosAPI = await getData(dadosResposta.localizacao);
+    } else {
+      enviarMensagemNormal(userInput);
+      return;
+    }
+
+    if (dadosAPI) {
+      await enviarMensagem(userInput, JSON.stringify(dadosAPI));
+    } else {
+      addMessage("Talia: Não consegui obter os dados necessários para responder.");
+    }
+
+  } catch (error) {
+    console.error("Erro ao processar a resposta JSON da Gemini:", error);
+    addMessage("Talia: Ocorreu um erro ao interpretar a resposta. Tente reformular sua pergunta.");
+  }
+}
+
+
+
+
+
+ // Requisição GET para buscar os locais
+        async function getLocation() {
+          const url = `http://localhost:5000/api/location`;
+          try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+            return await response.json();
+          } catch (error) {
+            console.error('Erro ao buscar locais:', error.message);
+            return null;
+          }
+        }
+      
+      
+        // Requisição GET para buscar os dados por LocationID
+        async function getData(value) {
+          const url = `http://localhost:5000/api/dados/${value}`;
+          try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+            return await response.json();
+          } catch (error) {
+            console.error('Erro ao buscar dados:', error.message);
+            return null;
+          }
+        }
+    
+
+
+
+
+
+    async function enviarMensagem(userInput, dadosAPI) {
+      showTypingIndicator();
+
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+
+const partes = [];
+
+
+
+partes.push({ text: `
+
+Com base nos dados: ${dadosAPI}
+
+
+Responda a dúvida do usuário: ${userInput} por extenso, como uma resposta normal
+
+` });
+
+
+
+
+
+const result = await model.generateContent({
+  contents: [{ role: "user", parts:partes }],
+  generationConfig: {
+    temperature: 0.4,
+  },
+});
+
+      const response = await result.response;
+      const texto = await response.text();
+      hideTypingIndicator(); 
+      historicoMensagens.push({ role: "model", parts: [{ text: texto }] });
+      addMessage("Talia: " + texto);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // carregarManualMD();
+
+      document.getElementById('chatbotBtn').addEventListener('click', () => {
+        document.getElementById('chatContainer').style.display = 'flex';
+      });
+
+      document.getElementById('closeBtn').addEventListener('click', () => {
+        document.getElementById('chatContainer').style.display = 'none';
+      });
+
+      document.getElementById('sendBtn').addEventListener('click', async () => {
+  const userInput = document.getElementById('userInput').value.trim();
+  if (!userInput) return;
+
+  addMessage("Você: " + userInput);
+  document.getElementById('userInput').value = '';
+  await AgenteChamaAPI(userInput);
+});
+
+    });
+
+
+ async function enviarMensagemNormal(userInput) {
+      showTypingIndicator();
+
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+
+const partes = [];
+
+
+
+partes.push({ text: `
+Responda a dúvida do usuário: ${userInput} por extenso, como uma resposta normal
+
+Regras: 
+Seja concisa
+Tente entender melhor a duvida do usuário
+
+
+` });
+
+
+
+
+
+const result = await model.generateContent({
+  contents: [{ role: "user", parts:partes }],
+  generationConfig: {
+    temperature: 0.4,
+  },
+});
+
+      const response = await result.response;
+      const texto = await response.text();
+      hideTypingIndicator(); 
+      historicoMensagens.push({ role: "model", parts: [{ text: texto }] });
+      addMessage("Talia: " + texto);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // carregarManualMD();
+
+      document.getElementById('chatbotBtn').addEventListener('click', () => {
+        document.getElementById('chatContainer').style.display = 'flex';
+      });
+
+      document.getElementById('closeBtn').addEventListener('click', () => {
+        document.getElementById('chatContainer').style.display = 'none';
+      });
+
+      document.getElementById('sendBtn').addEventListener('click', async () => {
+  const userInput = document.getElementById('userInput').value.trim();
+  if (!userInput) return;
+
+  addMessage("Você: " + userInput);
+  document.getElementById('userInput').value = '';
+  await AgenteChamaAPI(userInput);
+});
+
+    });
+
+
+
+
+    // Função para adicionar mensagens ao chat
+    function addMessage(message) {
+      const chatMessages = document.getElementById('chatMessages');
+
+      const isTalia = message.startsWith("Talia:");
+      const cleanText = message.replace("Talia:", "").replace("Você:", "").trim();
+
+      const wrapper = document.createElement('div');
+      wrapper.classList.add('message-wrapper');
+      wrapper.classList.add(isTalia ? 'talia-wrapper' : 'user-wrapper');
+
+      const msg = document.createElement('div');
+      msg.classList.add('message-class');
+      msg.classList.add(isTalia ? 'talia-message' : 'user-message');
+      msg.innerHTML = linkify(cleanText);
+
+      const nome = document.createElement('div');
+      nome.classList.add('message-sender');
+      nome.textContent = isTalia ? 'Talia' : 'Você';
+
+      wrapper.appendChild(msg);
+      wrapper.appendChild(nome);
+      chatMessages.appendChild(wrapper);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Função para adicionar imagem ao chat
+    function addImageToChat(base64) {
+      const chatMessages = document.getElementById('chatMessages');
+      const img = document.createElement('img');
+      img.classList.add('user-message');
+      img.src = 'data:image/png;base64,' + base64;
+      img.style.maxWidth = '100%';
+      img.style.margin = '10px 0';
+      chatMessages.appendChild(img);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+function linkify(text) {
+  const urlRegex = /(\bhttps?:\/\/[^\s]+)/g;
+  const imagemInternaRegex = /(?:!\[.*?\]|\[.*?\])?\((\/data\/imagens_md\/[^\s)]+?\.(?:png|jpg|jpeg|gif))\)/gi;
+
+  let html = text
+    .replace(/\n/g, "<br>")
+    .replace(/\*\*/g, "")
+    .replace(/\*/g, "&bull;");
+
+  // Converte links de imagem Markdown em <img>
+  html = html.replace(imagemInternaRegex, (match, path) => {
+    return `<br><img src="${path}" alt="Imagem do manual" style="max-width:100%; border-radius:6px; margin:10px 0;">`;
+  });
+
+  // Converte links externos em <a>
+  html = html.replace(urlRegex, (url) => {
+    return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+  });
+
+  return html;
+}
+
+
+
+    let typingIndicator;
+
+    function showTypingIndicator() {
+      const chatMessages = document.getElementById('chatMessages');
+
+      if (!typingIndicator) {
+        typingIndicator = document.createElement('div');
+        typingIndicator.classList.add('message-wrapper', 'talia-wrapper');
+
+        const indicatorContent = document.createElement('div');
+        indicatorContent.classList.add('typing-indicator');
+        indicatorContent.textContent = 'Talia está digitando...';
+
+        typingIndicator.appendChild(indicatorContent);
+        chatMessages.appendChild(typingIndicator);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+    }
+
+    function hideTypingIndicator() {
+      if (typingIndicator && typingIndicator.parentNode) {
+        typingIndicator.parentNode.removeChild(typingIndicator);
+        typingIndicator = null;
+      }
+    }
+
+document.getElementById('imageInput').addEventListener('change', async (event) => {
+
+  const base64 = await fileToBase64(file);
+  addImageToChat(base64);
+  await AgenteChamaAPI('', base64); 
+});
+
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+
+  </script>
+</body>
+</html>
