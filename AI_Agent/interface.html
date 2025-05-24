@@ -259,28 +259,7 @@ let resposta
     const API_KEY = ""; 
 
     const genAI = new GoogleGenerativeAI(API_KEY);
-    // let manualText = "";
     let historicoMensagens = [];
-
-// let manualCarregado = false;
-
-
-//     async function carregarManualMD() {
-//       const mdUrls = ["data/Manual_WMS_Seguranca.md", "data/Mapa.md", "data/Manual_WMS_Contrato.md"];
-//       let textoCompleto = "";
-
-//       for (const mdUrl of mdUrls) {
-//         const response = await fetch(mdUrl);
-//         let markdownText = await response.text();
-
-//         manualText += "\n ----- \n" + markdownText ;
-//       }
-
-
-
-//   manualCarregado = true;
-
-// }
 
 
 
@@ -457,7 +436,6 @@ const result = await model.generateContent({
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      // carregarManualMD();
 
       document.getElementById('chatbotBtn').addEventListener('click', () => {
         document.getElementById('chatContainer').style.display = 'flex';
