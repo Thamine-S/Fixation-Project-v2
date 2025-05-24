@@ -1,5 +1,5 @@
 ![header](https://github.com/user-attachments/assets/f40bffd7-dff1-4278-abdd-2be6650843ff)
-Este projeto simula a consulta de dados a partir de um banco SQL Server utilizando stored procedures expostas via API REST em ASP.NET Core. Na versão 2, o frontend em HTML, CSS e JavaScript integra a API Gemini para implementar um agente de IA generativa capaz de decidir, com base em linguagem natural, quais requisições realizar. A lógica é construída com base na técnica de chain of thought, tornando a interface mais autônoma e interativa.
+Este projeto simula a consulta de dados a partir de um banco SQL Server utilizando stored procedures expostas via API REST em ASP.NET Core, igauis da [versão 1](https://github.com/Thamine-S/Fixation-Project). Na versão 2, o frontend em HTML, CSS e JavaScript integra a API Gemini para implementar um agente de IA generativa capaz de decidir, com base em linguagem natural, quais requisições realizar. A lógica é construída com base na técnica de chain of thought, tornando a interface mais autônoma e interativa.
 [![miro](https://github.com/user-attachments/assets/a026a4ad-ce39-4235-af2f-b63ea078f6f2)](https://miro.com/app/board/uXjVIx8pu8A=/?share_link_id=484984334860)
 
 ### Tecnologias
@@ -28,7 +28,7 @@ Este projeto simula a consulta de dados a partir de um banco SQL Server utilizan
 ### Como Utilizar
 Você pode utilizar somente o chat de conversa da interface, seguindo os seguintes passos:
 
-> Peque sua chave API no [Google AI Studio](https://aistudio.google.com/apikey)
+> Pegue sua chave API no [Google AI Studio](https://aistudio.google.com/apikey)
 > 
 > Baixe o arquivo: [Interface](https://github.com/Thamine-S/Fixation-Project-v2/blob/main/AI_Agent/interface.html)
 >
