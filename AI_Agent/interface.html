@@ -204,7 +204,10 @@ body {
 
   <script type="module">
 
-const chamaAPI = `{
+const chamaAPI = `
+
+
+{
     "getLocation": {
       "api_a_ser_chamada": "getLocation",
         "descricao": "Consulta a quantidade de lugares de armazenagem disponíveis.",
@@ -215,6 +218,36 @@ const chamaAPI = `{
         "parametros": ["respectivo número da Localização"]
     }
 }`
+
+
+const manualAPI = `
+getData:
+{
+  "produtos": [
+    {
+      "ProductID": id do produto,
+      "Quantity": quantidade do produto,
+      "Name": "nome do produto"
+    },
+  ],
+  "resumo": {
+    "Produtos_total": total de tipos de produtos,
+    "Quantidade_total": quantidade total de todos os produtos(itens) armazenados na localidade
+  }
+}
+
+
+ou 
+
+getLocation:
+[
+  {
+    "LocationID": id da localização de armazenagem,
+    "Name": "Nome do local de armazenagem"
+  },
+]
+
+`
 
 
 let resposta
@@ -392,7 +425,13 @@ const partes = [];
 
 partes.push({ text: `
 
-Com base nos dados: ${dadosAPI}
+Com base nos dados: 
+
+${dadosAPI} 
+
+E no seu manual para a interpretação dos dados: 
+
+${manualAPI}
 
 
 Responda a dúvida do usuário: ${userInput} por extenso, como uma resposta normal
