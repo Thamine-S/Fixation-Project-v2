@@ -23,8 +23,25 @@ Este projeto simula a consulta de dados a partir de um banco SQL Server utilizan
 ![divisor](https://github.com/user-attachments/assets/0927ea13-666f-46ba-b86f-587d1d666de0)
 
 ### Como Utilizar
+Você pode utilizar somente o chat de conversa da interface, seguindo os seguintes passos:
+
+> Peque sua chave API no [Google AI Studio](https://aistudio.google.com/apikey)
+> 
+> Baixe o arquivo: [Interface](https://github.com/Thamine-S/Fixation-Project-v2/blob/main/AI_Agent/interface.html)
+>
+> Adicione sua API_KEY na seguinte parte do código, dentro do arquivo baixado:
+```
+  const API_KEY = "adicione aqui"; 
+```
+> Rode no localhost
+
+Não é possível utilizar a API em C# pela quantidade de processos que devem ser executados pra que ela rode conectada a um SQLServer.
+
 ![divisor](https://github.com/user-attachments/assets/90b6efe2-554e-483c-a338-d3032d490dec)
 
 ### Requisitos
+
+> Visual Studio Code
+> API KEY da Gemini
 
 
