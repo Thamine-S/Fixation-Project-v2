@@ -19,6 +19,9 @@ Este projeto simula a consulta de dados a partir de um banco SQL Server utilizan
 ![image](https://github.com/user-attachments/assets/b82efa0e-0c2d-4c5d-8c89-c1848e991195)
 
 
+### Funcionamento:
+![image](https://github.com/user-attachments/assets/bbe46210-87c0-4cb2-9cb8-e8866a842fb4)
+
 
 ![divisor](https://github.com/user-attachments/assets/0927ea13-666f-46ba-b86f-587d1d666de0)
 
@@ -42,6 +45,7 @@ Não é possível utilizar a API em C# pela quantidade de processos que devem se
 ### Requisitos
 
 > Visual Studio Code
+> 
 > API KEY da Gemini
 
 
