@@ -1,6 +1,6 @@
 ![header](https://github.com/user-attachments/assets/f40bffd7-dff1-4278-abdd-2be6650843ff)
 Este projeto simula a consulta de dados a partir de um banco SQL Server utilizando stored procedures expostas via API REST em ASP.NET Core, igauis da [versão 1](https://github.com/Thamine-S/Fixation-Project). Na versão 2, o frontend em HTML, CSS e JavaScript integra a API Gemini para implementar um agente de IA generativa capaz de decidir, com base em linguagem natural, quais requisições realizar. A lógica é construída com base na técnica de chain of thought, tornando a interface mais autônoma e interativa.
-[![miro](https://github.com/user-attachments/assets/a026a4ad-ce39-4235-af2f-b63ea078f6f2)](https://miro.com/app/board/uXjVIx8pu8A=/?share_link_id=484984334860)
+[![miro](https://github.com/user-attachments/assets/a026a4ad-ce39-4235-af2f-b63ea078f6f2)](https://miro.com/app/board/uXjVIOQp9eM=/?share_link_id=75535023437)
 
 ### Tecnologias
 
